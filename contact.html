@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact & Feedback Portal - KUE</title>
+  <meta name="description" content="Contact KUE, share feedback, and track the status of your feedback ticket.">
+
+ <script>
+    // Applied BEFORE first paint so there's no flash of the wrong theme.
+    (function () {
+      try {
+        var saved = localStorage.getItem("kueTheme");
+        if (saved === "dark") document.documentElement.setAttribute("data-theme", "dark");
+      } catch (e) { /* localStorage unavailable (private mode, etc.) - fall back to light */ }
+    })();
+  </script>
+  <!-- Our stylesheets: the original hand-written base, plus the
+       enhanced layer (theming, glassmorphism, wizard/filter/tabs UI). -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/enhanced.css">
+</head>
+<body>
+  <!-- ============ HEADER / NAVIGATION ============ -->
+  <header id="siteHeader">
+    <div class="container navbar">
+
+      <a href="index.html" class="logo">
+        <img src="images/logo.png" alt="KUE logo">
+        <span>KUE</span>
+      </a>
+
+      <!-- Hamburger button, only visible on small screens (see CSS).
+           Three <span> bars that CSS turns into an X when the "open"
+           class is added by script.js. -->
+      <button class="menu-toggle" id="menuButton" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <!-- Nav links. JS adds/removes the "show" class on mobile. -->
+      <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="academics.html">Academics</a></li>
+      <li><a href="faculties.html">Faculties</a></li>
+      <li><a href="research.html">Research</a></li>
+      <li><a href="admission.html">Admission</a></li>
+      <li><a href="student-life.html">Student Life</a></li>
+      <li><a href="news.html">News & Events</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="contact.html" class="active">Contact</a></li>
+      <li><a href="login.php" id="navAuthLink">Login</a></li>
+      <li class="theme-toggle-item">
+        <button type="button" id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+      </li>
+      </ul>
+
+    </div>
+  </header>
+
+  <!-- ============ PAGE BANNER ============ -->
+  <div class="page-banner" style="background-image:url('images/campus.jpg');">
+    <div class="page-banner-overlay"></div>
+    <div class="container page-banner-content">
+      <span class="page-banner-badge">KUE</span>
+      <h1>Contact & Feedback Portal</h1>
+    </div>
+  </div>
+
+  <section>
+    <div class="container">
+      <div class="portal-tabs" id="portalTabs">
+        <button type="button" class="portal-tab active" data-pane="contact">Contact Us</button>
+        <button type="button" class="portal-tab" data-pane="feedback">Share Feedback</button>
+        <button type="button" class="portal-tab" data-pane="track">Track My Feedback</button>
+      </div>
+
+      <!-- ---------------- CONTACT PANE ---------------- -->
+      <div class="portal-pane active" id="pane-contact">
+        <div class="contact-grid">
+          <div>
+            <p class="label">Get In Touch</p>
+            <h2>Send us a message</h2>
+
+            <!-- This form doesn't send data anywhere by itself.
+                 js/script.js listens for the "submit" event and
+                 shows a thank-you message instead. -->
+            <form class="contact-form" id="contactForm">
+              <label for="name">Full name</label>
+              <input type="text" id="name" required>
+
+              <label for="email">Email address</label>
+              <input type="email" id="email" required>
+
+              <label for="message">Message</label>
+              <textarea id="message" rows="5" required></textarea>
+
+              <br><br>
+              <button type="submit" class="btn">Send Message</button>
+              <p id="formMessage"></p>
+            </form>
+          </div>
+
+          <div class="contact-info-card">
+            <p class="label">University Contact</p>
+            <ul class="contact-details">
+              <li>
+                <div class="icon-badge icon-badge-sm"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 12-9 12s-9-5-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+                <div><strong>Address</strong><span>Kotebe, Yeka Sub-City, Addis Ababa, Ethiopia</span></div>
+              </li>
+              <li>
+                <div class="icon-badge icon-badge-sm"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 2 .7 3a2 2 0 0 1-.4 2.1L8 10.3a16 16 0 0 0 6 6l1.5-1.5a2 2 0 0 1 2-.4c1 .3 2 .5 3 .7a2 2 0 0 1 1.5 2.1z"/></svg></div>
+                <div><strong>Phone</strong><span>+251 11 833 2827</span></div>
+              </li>
+              <li>
+                <div class="icon-badge icon-badge-sm"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 6 10-6"/></svg></div>
+                <div><strong>Email</strong><span>info@kue.edu.et</span></div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- ============ LIVE MAP ============ -->
+        <div style="margin-top:60px;">
+          <p class="label center">Find Us</p>
+          <h2 class="center">Visit our campus</h2>
+          <div class="map-embed">
+            <iframe
+              src="https://www.openstreetmap.org/export/embed.html?bbox=38.8274%2C9.0301%2C38.8474%2C9.0501&amp;layer=mapnik&amp;marker=9.0401%2C38.8374"
+              loading="lazy"
+              title="Map showing Kotebe University of Education location">
+            </iframe>
+          </div>
+          <p class="center map-directions">
+            <a href="https://www.openstreetmap.org/?mlat=9.0401&amp;mlon=38.8374#map=16/9.0401/38.8374" target="_blank" rel="noopener" class="card-link">View larger map</a>
+            &nbsp;&middot;&nbsp;
+            <a href="https://www.google.com/maps/place/Kotebe+University+of+Education/@9.0383594,38.8372519,17z" target="_blank" rel="noopener" class="card-link">Get directions &rarr;</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- ---------------- FEEDBACK PANE ---------------- -->
+      <div class="portal-pane" id="pane-feedback">
+        <div style="max-width:600px;margin:0 auto;">
+          <p class="label center">Feedback</p>
+          <h2 class="center">Tell us what you think</h2>
+          <p class="center">Your feedback is stored in your own browser only (this is a demo site, not connected to a live server).</p>
+
+          <div class="draft-banner hidden" id="newTicketBanner">
+            <span>Thanks! Your tracking ID is <strong id="newTicketId"></strong> - save it to check your status later.</span>
+          </div>
+
+          <!-- The star rating: 5 buttons script.js wires up so clicking
+               a star highlights it and every star before it - see the
+               STAR RATING section in script.js. -->
+          <form class="contact-form" id="feedbackForm">
+            <label>Your rating</label>
+            <div class="star-rating" id="starRating">
+              <button type="button" class="star" data-value="1">&#9733;</button>
+              <button type="button" class="star" data-value="2">&#9733;</button>
+              <button type="button" class="star" data-value="3">&#9733;</button>
+              <button type="button" class="star" data-value="4">&#9733;</button>
+              <button type="button" class="star" data-value="5">&#9733;</button>
+            </div>
+            <p class="field-error" id="ratingError"></p>
+
+            <label for="feedbackName">Your name</label>
+            <input type="text" id="feedbackName" required>
+
+            <label for="feedbackComment">Your comment</label>
+            <textarea id="feedbackComment" rows="4" required></textarea>
+
+            <br><br>
+            <button type="submit" class="btn">Submit Feedback</button>
+            <p id="feedbackMessage"></p>
+          </form>
+        </div>
+
+        <div style="max-width:700px;margin:50px auto 0;">
+          <p class="label center">From the Community</p>
+          <h2 class="center" id="feedbackAverage">Average rating: -</h2>
+          <div id="feedbackList"></div>
+        </div>
+      </div>
+
+      <!-- ---------------- TRACK STATUS PANE ---------------- -->
+      <div class="portal-pane" id="pane-track">
+        <div class="tracker-box">
+          <p class="label center">Live Status Tracker</p>
+          <h2 class="center">Track your feedback ticket</h2>
+          <p>Enter the tracking ID you received after submitting feedback (e.g. <strong>KUE-FB-1234</strong>) to see a simulated live status update.</p>
+
+          <form class="tracker-form" id="trackForm">
+            <input type="text" id="trackInput" placeholder="KUE-FB-1234">
+            <button type="submit" class="btn">Check Status</button>
+          </form>
+
+          <div id="trackResult"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NEWSLETTER STRIP ============ -->
+  <div class="newsletter">
+    <div class="container newsletter-inner">
+      <div>
+        <h3>Stay in the loop</h3>
+        <p>Get admission deadlines and campus news in your inbox.</p>
+      </div>
+      <!-- js/script.js shows a thank-you message on submit - see the
+           NEWSLETTER section in script.js. -->
+      <form id="newsletterForm" class="newsletter-form">
+        <input type="email" id="newsletterEmail" placeholder="you@example.com" required>
+        <button type="submit" class="btn">Subscribe</button>
+      </form>
+      <p id="newsletterMessage"></p>
+    </div>
+  </div>
+
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <div class="container footer-columns">
+
+        <div class="footer-about">
+          <p>Kotebe University of Education &mdash; committed to excellence in education since 1959.</p>
+
+          <!-- Social icons - small inline SVGs, colored via CSS currentColor -->
+          <div class="social-icons">
+            <a href="#" aria-label="Facebook">
+              <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M13 22v-8h3l1-4h-4V7.5C13 6.4 13.4 6 14.6 6H17V2.1C16.6 2 15.3 2 13.9 2 11 2 9 3.8 9 7v3H6v4h3v8h4z"/></svg>
+            </a>
+            <a href="#" aria-label="Twitter">
+              <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M22 5.9c-.7.3-1.5.6-2.4.7.8-.5 1.5-1.3 1.8-2.3-.8.5-1.7.8-2.6 1a4.1 4.1 0 0 0-7 3.7A11.6 11.6 0 0 1 3.4 4.6a4.1 4.1 0 0 0 1.3 5.5c-.7 0-1.3-.2-1.9-.5v.1c0 2 1.4 3.6 3.3 4a4.2 4.2 0 0 1-1.9.1c.5 1.6 2 2.8 3.8 2.9A8.3 8.3 0 0 1 2 18.4a11.6 11.6 0 0 0 6.3 1.9c7.5 0 11.7-6.4 11.7-11.9v-.5c.8-.6 1.5-1.3 2-2z"/></svg>
+            </a>
+            <a href="#" aria-label="YouTube">
+              <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M22 12s0-3.2-.4-4.6a2.8 2.8 0 0 0-2-2C17.9 5 12 5 12 5s-5.9 0-7.6.4a2.8 2.8 0 0 0-2 2C2 8.8 2 12 2 12s0 3.2.4 4.6a2.8 2.8 0 0 0 2 2C6.1 19 12 19 12 19s5.9 0 7.6-.4a2.8 2.8 0 0 0 2-2C22 15.2 22 12 22 12zM10 15.5v-7l6 3.5z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="academics.html">Academics</a></li>
+            <li><a href="admission.html">Admission</a></li>
+            <li><a href="services.html">Services</a></li>
+            <li><a href="faq.html">FAQ</a></li>
+            <li><a href="contact.html#feedback">Feedback</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>University</h4>
+          <ul>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="faculties.html">Faculties</a></li>
+            <li><a href="research.html">Research</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Contact</h4>
+          <ul class="footer-contact">
+            <li>Kotebe, Addis Ababa, Ethiopia</li>
+            <li>info@kue.edu.et</li>
+            <li>+251 11 833 2827</li>
+          </ul>
+        </div>
+
+    </div>
+
+    <div class="container footer-bottom">
+      <p>&copy; 2026 KUE - Kotebe University of Education</p>
+    </div>
+  </footer>
+
+  <!-- ============ HELP DESK CHATBOT ============
+       A real AI chatbot, powered by Google's Gemini API - see the
+       HELP DESK CHATBOT section in script.js. It needs an API key to
+       work, entered via the gear icon below and saved only in your
+       own browser. Without a key, it automatically falls back to a
+       simple built-in FAQ matcher instead, so it's never fully broken. -->
+  <div id="chatWindow" class="chat-window">
+    <div class="chat-header">
+      <span>KUE Help Desk <span class="chat-powered-by">Powered by Gemini</span></span>
+      <div class="chat-header-actions">
+        <button id="chatSettingsBtn" aria-label="Chat settings">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <button id="chatCloseBtn" aria-label="Close chat">&times;</button>
+      </div>
+    </div>
+
+    <!-- Settings panel - hidden until the gear icon is clicked -->
+    <div id="chatSettingsPanel" class="chat-settings-panel">
+      <label for="chatApiKeyInput">Google Gemini API key</label>
+      <input type="password" id="chatApiKeyInput" placeholder="AIza...">
+      <p class="chat-settings-note">
+        Stored only in your browser (localStorage) - never sent anywhere except directly to Google's Gemini API.
+        Get a free key at <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener">aistudio.google.com</a>.
+        Leave empty to use the built-in FAQ matcher instead of real AI.
+      </p>
+      <div class="chat-settings-buttons">
+        <button type="button" id="chatSaveKeyBtn" class="btn">Save</button>
+        <button type="button" id="chatClearKeyBtn" class="btn btn-outline-dark">Clear Key</button>
+      </div>
+      <p id="chatSettingsStatus"></p>
+    </div>
+
+    <div id="chatMessages" class="chat-messages"></div>
+    <div class="chat-quick-replies" id="chatQuickReplies">
+      <button type="button" data-question="How do I apply?">How do I apply?</button>
+      <button type="button" data-question="What colleges do you have?">Our colleges</button>
+      <button type="button" data-question="How do I contact the university?">Contact info</button>
+      <button type="button" data-question="How do I log in?">Login help</button>
+    </div>
+    <form id="chatForm" class="chat-form">
+      <input type="text" id="chatInput" placeholder="Ask a question..." autocomplete="off">
+      <button type="submit" aria-label="Send">&rarr;</button>
+    </form>
+  </div>
+
+  <button id="chatToggleBtn" aria-label="Open help desk chat">
+    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+  </button>
+
+  <!-- Scroll-to-top button - hidden until you scroll down a bit,
+       see the BACK TO TOP section in script.js -->
+  <button id="backToTop" aria-label="Back to top">&uarr;</button>
+
+  <!-- Our JS: the original base logic, then the enhanced UX layer. -->
+  <script src="js/script.js"></script>
+  <script src="js/enhanced.js"></script>
+</body>
+</html>

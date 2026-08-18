@@ -1,0 +1,670 @@
+/* =========================================================
+   KUE ENHANCED STYLESHEET
+   Loaded AFTER css/style.css on every page. Adds: a light/dark
+   theme system (CSS variables + a [data-theme="dark"] override
+   layer), glassmorphism cards, toast notifications, a slide-in
+   mobile drawer, multi-step form UI, live filter/search bars,
+   media hub tabs + lightbox, and a feedback status tracker.
+
+   Nothing in here touches an existing selector's base rules -
+   it only ADDS new classes and OVERRIDES color values inside
+   the [data-theme="dark"] scope, so the original site/js/script.js
+   behaviour (and the 47/47 test suite) keeps working untouched.
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   1. THEME VARIABLES
+   Light values mirror the existing hand-picked palette from
+   style.css exactly, so switching to "light" (the default)
+   changes nothing visually. Dark values are a deliberate,
+   legible navy/charcoal palette using the same gold + teal
+   accents so the brand still reads as KUE.
+   --------------------------------------------------------- */
+:root {
+  --kue-bg: #ffffff;
+  --kue-bg-alt: #f4f1ea;
+  --kue-surface: #ffffff;
+  --kue-surface-glass: rgba(255, 255, 255, 0.65);
+  --kue-border: #e5e1d8;
+  --kue-text: #333333;
+  --kue-text-soft: #666666;
+  --kue-heading: #0a1a2f;
+  --kue-navy: #0a1a2f;
+  --kue-navy-soft: rgba(10, 26, 47, 0.06);
+  --kue-gold: #e2a53a;
+  --kue-teal: #17a398;
+  --kue-danger: #c0392b;
+  --kue-success: #1e8449;
+  --kue-shadow: 0 12px 28px rgba(10, 26, 47, 0.1);
+  --kue-blur: blur(14px);
+  --kue-transition: 0.25s ease;
+}
+
+html[data-theme="dark"] {
+  --kue-bg: #0b1220;
+  --kue-bg-alt: #101a2c;
+  --kue-surface: #141f36;
+  --kue-surface-glass: rgba(20, 31, 54, 0.55);
+  --kue-border: rgba(255, 255, 255, 0.09);
+  --kue-text: #d7dce6;
+  --kue-text-soft: #97a2b8;
+  --kue-heading: #f4f6fb;
+  --kue-navy: #060b16;
+  --kue-navy-soft: rgba(226, 165, 58, 0.08);
+  --kue-gold: #f0bc5e;
+  --kue-teal: #2fd2c4;
+  --kue-danger: #ff6b6b;
+  --kue-success: #4fd18b;
+  --kue-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+/* Smooth, sitewide crossfade whenever the theme flips */
+html[data-theme] body,
+html[data-theme] header,
+html[data-theme] footer,
+html[data-theme] section,
+html[data-theme] .card,
+html[data-theme] .cards,
+html[data-theme] input,
+html[data-theme] select,
+html[data-theme] textarea {
+  transition: background-color var(--kue-transition), color var(--kue-transition),
+              border-color var(--kue-transition), box-shadow var(--kue-transition);
+}
+
+/* Apply the variables on top of the existing hard-coded colors.
+   These selectors match style.css's own selectors 1:1 so dark
+   mode "just works" without editing the original file. */
+html[data-theme="dark"] body { background-color: var(--kue-bg); color: var(--kue-text); }
+html[data-theme="dark"] header { background-color: var(--kue-navy); }
+html[data-theme="dark"] h1, html[data-theme="dark"] h2, html[data-theme="dark"] h3 { color: var(--kue-heading); }
+html[data-theme="dark"] .section-alt { background-color: var(--kue-bg-alt); }
+html[data-theme="dark"] .card {
+  background-color: var(--kue-surface);
+  border-color: var(--kue-border);
+}
+html[data-theme="dark"] .card:hover { box-shadow: var(--kue-shadow); }
+html[data-theme="dark"] .label { color: var(--kue-teal); }
+html[data-theme="dark"] .contact-info-card,
+html[data-theme="dark"] .feedback-card,
+html[data-theme="dark"] .data-table,
+html[data-theme="dark"] .chat-window,
+html[data-theme="dark"] .lightbox-close,
+html[data-theme="dark"] .notice-box {
+  background-color: var(--kue-surface);
+  border-color: var(--kue-border);
+  color: var(--kue-text);
+}
+html[data-theme="dark"] .contact-form input,
+html[data-theme="dark"] .contact-form textarea,
+html[data-theme="dark"] .contact-form select,
+html[data-theme="dark"] input[type="text"],
+html[data-theme="dark"] input[type="email"],
+html[data-theme="dark"] input[type="tel"],
+html[data-theme="dark"] input[type="password"],
+html[data-theme="dark"] input[type="date"],
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  background-color: var(--kue-surface);
+  border-color: var(--kue-border);
+  color: var(--kue-text);
+}
+html[data-theme="dark"] .newsletter { background-color: var(--kue-navy); }
+html[data-theme="dark"] footer { background-color: var(--kue-navy); }
+html[data-theme="dark"] #collegeSearch,
+html[data-theme="dark"] .faq-search input {
+  background-color: var(--kue-surface);
+  border-color: var(--kue-border);
+  color: var(--kue-text);
+}
+html[data-theme="dark"] .data-table tr:nth-child(even) { background-color: rgba(255,255,255,0.03); }
+
+/* ---------------------------------------------------------
+   2. THEME TOGGLE SWITCH (sun/moon)
+   --------------------------------------------------------- */
+.nav-links li.theme-toggle-item { display: flex; align-items: center; }
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.theme-toggle:hover { background-color: rgba(255, 255, 255, 0.16); transform: translateY(-1px); }
+.theme-toggle svg { width: 18px; height: 18px; }
+.theme-toggle .icon-moon { display: none; }
+html[data-theme="dark"] .theme-toggle .icon-sun { display: none; }
+html[data-theme="dark"] .theme-toggle .icon-moon { display: inline-block; }
+
+/* ---------------------------------------------------------
+   3. MOBILE DRAWER MENU
+   The base site already toggles ".show" on #navLinks from
+   script.js. This upgrades that into a true slide-in drawer
+   with a dimmed backdrop on small screens, while leaving the
+   desktop row layout from style.css alone.
+   --------------------------------------------------------- */
+.nav-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(6, 11, 22, 0.55);
+  backdrop-filter: var(--kue-blur);
+  z-index: 98;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.nav-overlay.show { opacity: 1; visibility: visible; }
+
+@media (max-width: 860px) {
+  .nav-links {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: min(78vw, 320px);
+    background-color: var(--kue-navy);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    padding: 90px 28px 28px;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 99;
+    overflow-y: auto;
+    box-shadow: -12px 0 40px rgba(0, 0, 0, 0.35);
+  }
+  .nav-links.show { transform: translateX(0); }
+  .nav-links li { width: 100%; }
+  .nav-links a { display: block; padding: 12px 0; width: 100%; font-size: 17px; }
+  .nav-links li.theme-toggle-item { margin-top: 8px; }
+}
+
+/* ---------------------------------------------------------
+   4. GLASSMORPHISM CARDS
+   Used on the new/expanded pages for progress steps, filter
+   bars, uploaded-document tiles, tabs, and the tracker panel.
+   --------------------------------------------------------- */
+.glass-card {
+  background: var(--kue-surface-glass);
+  backdrop-filter: var(--kue-blur);
+  -webkit-backdrop-filter: var(--kue-blur);
+  border: 1px solid var(--kue-border);
+  border-radius: 16px;
+  box-shadow: var(--kue-shadow);
+  padding: 28px;
+}
+
+/* ---------------------------------------------------------
+   5. TOAST NOTIFICATIONS
+   --------------------------------------------------------- */
+#toastStack {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 400;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: min(360px, calc(100vw - 32px));
+}
+.toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--kue-surface-glass);
+  backdrop-filter: var(--kue-blur);
+  -webkit-backdrop-filter: var(--kue-blur);
+  border: 1px solid var(--kue-border);
+  box-shadow: var(--kue-shadow);
+  color: var(--kue-text);
+  font-size: 14px;
+  line-height: 1.45;
+  transform: translateX(120%);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.toast.show { transform: translateX(0); opacity: 1; }
+.toast-icon { flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; }
+.toast.success .toast-icon { background-color: var(--kue-success); }
+.toast.error .toast-icon { background-color: var(--kue-danger); }
+.toast.info .toast-icon { background-color: var(--kue-teal); }
+.toast-close { margin-left: auto; background: none; border: none; color: var(--kue-text-soft); cursor: pointer; font-size: 16px; line-height: 1; }
+
+/* ---------------------------------------------------------
+   6. MULTI-STEP FORM (Admissions)
+   --------------------------------------------------------- */
+.step-progress {
+  display: flex;
+  align-items: center;
+  margin: 34px 0 10px;
+  list-style: none;
+  padding: 0;
+}
+.step-progress li {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  font-size: 13px;
+  color: var(--kue-text-soft);
+}
+.step-progress li::before {
+  content: attr(data-step);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
+  background-color: var(--kue-surface);
+  border: 2px solid var(--kue-border);
+  color: var(--kue-text-soft);
+  font-weight: 700;
+  font-family: "Fraunces", Georgia, serif;
+  transition: all 0.25s ease;
+}
+.step-progress li::after {
+  content: "";
+  position: absolute;
+  top: 17px;
+  left: -50%;
+  width: 100%;
+  height: 2px;
+  background-color: var(--kue-border);
+  z-index: -1;
+}
+.step-progress li:first-child::after { display: none; }
+.step-progress li.active { color: var(--kue-navy); font-weight: 600; }
+html[data-theme="dark"] .step-progress li.active { color: var(--kue-heading); }
+.step-progress li.active::before,
+.step-progress li.done::before {
+  background-color: var(--kue-gold);
+  border-color: var(--kue-gold);
+  color: var(--kue-navy);
+}
+.step-progress li.done::after { background-color: var(--kue-gold); }
+.step-progress li.done::before { content: "\2713"; }
+
+.form-step { display: none; animation: kueFadeIn 0.35s ease; }
+.form-step.active { display: block; }
+@keyframes kueFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
+
+.field-hint { font-size: 12.5px; color: var(--kue-text-soft); margin-top: -10px; margin-bottom: 14px; }
+
+/* Real-time validation state rings, layered on top of the
+   existing .contact-form input styling from style.css */
+.contact-form input.valid,
+.contact-form select.valid,
+.contact-form textarea.valid { border-color: var(--kue-success); box-shadow: 0 0 0 3px rgba(30, 132, 73, 0.12); }
+.contact-form input.invalid,
+.contact-form select.invalid,
+.contact-form textarea.invalid { border-color: var(--kue-danger); box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.12); }
+
+.step-nav { display: flex; justify-content: space-between; margin-top: 28px; gap: 12px; }
+.step-nav .btn-outline-dark {
+  border: 1.5px solid var(--kue-navy);
+  color: var(--kue-navy);
+  background: transparent;
+  padding: 12px 26px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+html[data-theme="dark"] .step-nav .btn-outline-dark { border-color: var(--kue-heading); color: var(--kue-heading); }
+.step-nav .btn-outline-dark:hover { background-color: var(--kue-navy); color: #fff; }
+.step-nav button.btn { cursor: pointer; border: none; font-size: 15px; }
+
+.draft-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: rgba(226, 165, 58, 0.12);
+  border: 1px solid rgba(226, 165, 58, 0.4);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  flex-wrap: wrap;
+}
+.draft-banner button {
+  background: none;
+  border: none;
+  color: var(--kue-teal);
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 13.5px;
+}
+
+/* Document upload dropzone */
+.dropzone {
+  border: 2px dashed var(--kue-border);
+  border-radius: 12px;
+  padding: 34px 20px;
+  text-align: center;
+  cursor: pointer;
+  background-color: var(--kue-bg-alt);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.dropzone.dragover { border-color: var(--kue-teal); background-color: rgba(23, 163, 152, 0.08); }
+.dropzone svg { margin-bottom: 10px; color: var(--kue-teal); }
+.dropzone p { margin: 0; color: var(--kue-text-soft); font-size: 14px; }
+.dropzone strong { color: var(--kue-navy); }
+html[data-theme="dark"] .dropzone strong { color: var(--kue-heading); }
+
+.doc-required-list { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 20px; }
+.doc-chip {
+  font-size: 12.5px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--kue-border);
+  color: var(--kue-text-soft);
+  background: var(--kue-surface);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.doc-chip.satisfied { color: var(--kue-success); border-color: var(--kue-success); }
+.doc-chip.satisfied::before { content: "\2713"; font-weight: 700; }
+
+.file-list { list-style: none; padding: 0; margin: 18px 0 0; display: flex; flex-direction: column; gap: 10px; }
+.file-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--kue-surface);
+  border: 1px solid var(--kue-border);
+  font-size: 13.5px;
+}
+.file-list .file-meta { flex: 1; min-width: 0; }
+.file-list .file-name { display: block; font-weight: 600; color: var(--kue-navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html[data-theme="dark"] .file-list .file-name { color: var(--kue-heading); }
+.file-list .file-size { color: var(--kue-text-soft); font-size: 12px; }
+.file-list .file-remove { background: none; border: none; color: var(--kue-danger); cursor: pointer; font-size: 16px; line-height: 1; }
+.file-progress { width: 100%; height: 4px; border-radius: 4px; background: var(--kue-border); overflow: hidden; margin-top: 6px; }
+.file-progress span { display: block; height: 100%; background-color: var(--kue-teal); width: 0%; transition: width 0.4s ease; }
+
+/* Review step summary */
+.review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 28px; margin: 18px 0 24px; }
+@media (max-width: 640px) { .review-grid { grid-template-columns: 1fr; } }
+.review-grid dt { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--kue-text-soft); }
+.review-grid dd { margin: 2px 0 0; font-weight: 600; color: var(--kue-heading); }
+
+/* ---------------------------------------------------------
+   7. DIRECTORY FILTER BAR (Faculties / Course Directory)
+   --------------------------------------------------------- */
+.filter-bar {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 14px;
+  margin: 24px 0 8px;
+}
+@media (max-width: 720px) { .filter-bar { grid-template-columns: 1fr; } }
+.filter-bar input,
+.filter-bar select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--kue-border);
+  background-color: var(--kue-surface);
+  color: var(--kue-text);
+  font-size: 14.5px;
+  font-family: inherit;
+}
+.filter-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 6px 0 6px;
+  font-size: 13.5px;
+  color: var(--kue-text-soft);
+}
+.filter-meta button {
+  background: none;
+  border: none;
+  color: var(--kue-teal);
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 13px;
+}
+.level-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  background-color: rgba(23, 163, 152, 0.12);
+  color: var(--kue-teal);
+}
+.dept-tag { font-size: 12.5px; color: var(--kue-text-soft); margin-top: 8px; display: block; }
+
+/* ---------------------------------------------------------
+   8. MEDIA HUB TABS + LIGHTBOX
+   --------------------------------------------------------- */
+.hub-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 22px 0 6px;
+}
+.hub-tab {
+  padding: 10px 20px;
+  border-radius: 30px;
+  border: 1.5px solid var(--kue-border);
+  background-color: var(--kue-surface);
+  color: var(--kue-text-soft);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.hub-tab:hover { border-color: var(--kue-teal); color: var(--kue-teal); }
+.hub-tab.active { background-color: var(--kue-navy); border-color: var(--kue-navy); color: #fff; }
+html[data-theme="dark"] .hub-tab.active { background-color: var(--kue-gold); border-color: var(--kue-gold); color: var(--kue-navy); }
+
+.gallery-grid figure { position: relative; margin: 0; overflow: hidden; border-radius: 10px; cursor: pointer; }
+.gallery-grid figure img { transition: transform 0.4s ease; }
+.gallery-grid figure:hover img { transform: scale(1.06); }
+.gallery-grid figcaption {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 10px 12px 8px;
+  font-size: 12.5px;
+  color: #fff;
+  background: linear-gradient(to top, rgba(6, 11, 22, 0.85), rgba(6, 11, 22, 0));
+}
+.gallery-grid figure.hidden { display: none; }
+
+.video-tile { position: relative; }
+.video-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background-color: rgba(226, 165, 58, 0.92);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='20' height='20' fill='%230a1a2f'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.video-lightbox {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(6, 11, 22, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  padding: 24px;
+}
+.video-lightbox.open { opacity: 1; visibility: visible; }
+.video-lightbox video { max-width: min(900px, 100%); max-height: 82vh; border-radius: 10px; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+.video-lightbox-close {
+  position: absolute;
+  top: 22px; right: 26px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 34px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------
+   9. CONTACT & FEEDBACK PORTAL TABS
+   --------------------------------------------------------- */
+.portal-tabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--kue-border);
+  margin-bottom: 34px;
+  flex-wrap: wrap;
+}
+.portal-tab {
+  padding: 12px 22px;
+  border: none;
+  background: none;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--kue-text-soft);
+  cursor: pointer;
+  position: relative;
+  top: 1px;
+}
+.portal-tab.active { color: var(--kue-navy); border-bottom: 2.5px solid var(--kue-gold); }
+html[data-theme="dark"] .portal-tab.active { color: var(--kue-heading); }
+.portal-pane { display: none; animation: kueFadeIn 0.3s ease; }
+.portal-pane.active { display: block; }
+
+.tracker-box { max-width: 480px; margin: 0 auto; text-align: center; }
+.tracker-form { display: flex; gap: 10px; margin: 20px 0 6px; }
+.tracker-form input {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--kue-border);
+  background-color: var(--kue-surface);
+  color: var(--kue-text);
+  font-family: inherit;
+  font-size: 14.5px;
+}
+.tracker-form button { white-space: nowrap; cursor: pointer; border: none; }
+
+.tracker-timeline { list-style: none; padding: 0; margin: 30px 0 0; text-align: left; }
+.tracker-timeline li {
+  position: relative;
+  padding: 0 0 26px 34px;
+  border-left: 2px solid var(--kue-border);
+  margin-left: 10px;
+}
+.tracker-timeline li:last-child { border-left-color: transparent; padding-bottom: 2px; }
+.tracker-timeline li::before {
+  content: "";
+  position: absolute;
+  left: -9px;
+  top: 0;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background-color: var(--kue-border);
+  border: 3px solid var(--kue-surface, #fff);
+}
+.tracker-timeline li.done::before { background-color: var(--kue-success); }
+.tracker-timeline li.current::before { background-color: var(--kue-gold); box-shadow: 0 0 0 4px rgba(226, 165, 58, 0.25); }
+.tracker-timeline .tt-label { font-weight: 700; color: var(--kue-heading); display: block; }
+.tracker-timeline .tt-time { font-size: 12.5px; color: var(--kue-text-soft); }
+.tracker-ticket-id {
+  display: inline-block;
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--kue-navy);
+  background: rgba(226, 165, 58, 0.14);
+  padding: 8px 18px;
+  border-radius: 8px;
+  margin: 14px 0;
+  letter-spacing: 0.5px;
+}
+html[data-theme="dark"] .tracker-ticket-id { color: var(--kue-heading); }
+
+/* Utility */
+.mt-0 { margin-top: 0 !important; }
+.hidden { display: none !important; }
+
+/* ============ ADMIN / DASHBOARD ENHANCEMENTS ============
+   Added for the database-backed account system: role/status
+   badges, the admin "create account" card, and small polish
+   touches on tables and buttons used across dashboard.php and
+   admin/index.php. */
+
+.role-badge, .status-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.role-student { background: rgba(23, 163, 152, 0.14); color: var(--kue-teal); }
+.role-staff   { background: rgba(226, 165, 58, 0.16); color: var(--kue-gold); }
+.role-admin   { background: var(--kue-navy-soft); color: var(--kue-navy); }
+html[data-theme="dark"] .role-admin { color: var(--kue-heading); }
+
+.status-active    { background: rgba(30, 132, 73, 0.14); color: var(--kue-success); }
+.status-pending   { background: rgba(226, 165, 58, 0.16); color: var(--kue-gold); }
+.status-suspended { background: rgba(192, 57, 43, 0.14); color: var(--kue-danger); }
+
+.admin-create-card {
+  background: var(--kue-surface);
+  border: 1px solid var(--kue-border);
+  border-radius: 14px;
+  box-shadow: var(--kue-shadow);
+  padding: 28px 30px;
+  margin: 24px 0 10px;
+  transition: box-shadow var(--kue-transition);
+}
+.admin-create-card:hover { box-shadow: 0 16px 34px rgba(10, 26, 47, 0.14); }
+
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 6px 24px;
+}
+.admin-form-grid label { margin-top: 12px; }
+
+table { border-radius: 10px; overflow: hidden; }
+table tr:hover { background: var(--kue-navy-soft); }
+
+.btn, .btn-outline-dark {
+  transition: transform var(--kue-transition), box-shadow var(--kue-transition);
+}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(226, 165, 58, 0.25); }
+.btn-outline-dark:hover { transform: translateY(-1px); }
