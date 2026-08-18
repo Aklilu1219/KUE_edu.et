@@ -3,13 +3,11 @@ require_once __DIR__ . '/includes/auth.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+// If the user is already logged in, redirect them
 if (current_user()) {
     header("Location: dashboard.php");
     exit;
 }
-echo "LOGIN SUCCESS - session id: " . session_id();
-var_dump($_SESSION);
-exit;
 
 $error    = '';
 $username = '';
@@ -21,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($username === '' || $password === '') {
         $error = "Please enter both your username and password.";
     } else {
+        // Ensure $conn is defined in your auth.php or included config
         $stmt = $conn->prepare("SELECT id, full_name, username, password, role, status FROM users WHERE username = ? LIMIT 1");
         $stmt->bind_param("s", $username);
         $stmt->execute();
