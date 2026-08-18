@@ -7,6 +7,9 @@ if (current_user()) {
     header("Location: dashboard.php");
     exit;
 }
+echo "LOGIN SUCCESS - session id: " . session_id();
+var_dump($_SESSION);
+exit;
 
 $error    = '';
 $username = '';
